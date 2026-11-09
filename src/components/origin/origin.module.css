@@ -1,0 +1,191 @@
+/*
+ * ORIGIN — le reveal : une ligne de lumière → un écran qui s'ouvre → ORIGIN s'éclaire.
+ * Scène 1 : conteneur collé (sticky) piloté par le scroll (scrub). Scène 2 : contenu éditorial en flux normal.
+ * Le DOM par défaut = état FINAL (accessible : reduced-motion, sans JS) : écran ouvert, ORIGIN éclairé, sans la ligne.
+ */
+.section {
+  position: relative;
+  background: var(--color-ink);
+}
+
+.pin {
+  height: calc(var(--pin-height) * 1svh);
+}
+@media (max-width: 767px) {
+  .pin {
+    height: calc(var(--pin-height-mobile) * 1svh);
+  }
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 var(--space-gutter);
+}
+
+/* Lueur derrière l'écran : la lumière qui « déborde » quand il s'ouvre. */
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(120vw, 90rem);
+  aspect-ratio: 16 / 9;
+  transform-origin: 50% 50%;
+  margin: calc(min(120vw, 90rem) * -0.28) 0 0 calc(min(120vw, 90rem) / -2);
+  background: radial-gradient(ellipse at center, rgba(143, 18, 32, 0.38), rgba(74, 10, 16, 0.16) 40%, transparent 68%);
+  pointer-events: none;
+}
+
+.stage {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 4svh, 2.5rem);
+  width: 100%;
+  will-change: transform;
+}
+
+.screenWrap {
+  position: relative;
+  /* Largeur limitée aussi par la HAUTEUR disponible : écran 16:9 + sous-titre doivent tenir dans la fenêtre. */
+  width: min(92vw, 68rem, calc((100svh - 19rem) * 16 / 9));
+}
+
+/* La ligne d'ignition : n'existe que pendant l'intro animée. */
+.line {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  transform-origin: 50% 50%;
+  background: linear-gradient(90deg, transparent, var(--color-ivory) 18%, var(--color-ivory) 82%, transparent);
+  box-shadow: 0 0 18px 1px rgba(255, 190, 140, 0.55);
+  pointer-events: none;
+}
+.section[data-motion="pending"] .line,
+.section[data-motion="on"] .line {
+  display: block;
+}
+
+.screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(244, 239, 230, 0.18);
+  border-radius: var(--radius-card);
+  background: radial-gradient(ellipse 80% 90% at 50% 45%, rgba(74, 10, 16, 0.55), rgba(5, 5, 5, 0.9) 70%), var(--color-ink);
+}
+
+/* Vidéo d'ambiance derrière le mot (voir OriginVideo.jsx) */
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
+  pointer-events: none;
+}
+.videoVeil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(58% 50% at 50% 50%, rgba(5, 5, 5, 0.62), rgba(5, 5, 5, 0.1) 78%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.3), rgba(5, 5, 5, 0.5));
+  pointer-events: none;
+}
+
+/* ORIGIN : Archivo à largeur maximale — même famille de lettres larges que le logo. Balayage de lumière gauche → droite. */
+.wordmark {
+  font-family: var(--font-subtitle);
+  font-weight: 800;
+  font-stretch: 125%;
+  font-variation-settings: "wdth" 125;
+  font-size: clamp(2.25rem, 0.8rem + 6.6vw, 7rem);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  margin-right: -0.06em; /* compense l'espacement final pour rester centré */
+  position: relative;
+  z-index: 1;
+  text-transform: uppercase;
+  color: transparent;
+  background: linear-gradient(
+    90deg,
+    var(--color-ivory) 0%,
+    var(--color-ivory) 45%,
+    rgba(244, 239, 230, 0.1) 55%,
+    rgba(244, 239, 230, 0.1) 100%
+  );
+  background-size: 220% 100%;
+  background-position: 0% 0; /* final : entièrement éclairé */
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.tag {
+  z-index: 1;
+  position: absolute;
+  left: clamp(0.75rem, 2vw, 1.5rem);
+  bottom: clamp(0.75rem, 2vw, 1.25rem);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.55);
+}
+.tag::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-signal);
+}
+
+/* Avant l'animation : salle noire, écran fermé, mot éteint. */
+.section[data-motion="pending"] .screen {
+  clip-path: inset(50% 0 50% 0 round 20px);
+}
+.section[data-motion="pending"] .wordmark {
+  background-position: 100% 0;
+}
+.section[data-motion="pending"] [data-w],
+.section[data-motion="pending"] .tag,
+.section[data-motion="pending"] .glow {
+  opacity: 0;
+}
+.section[data-motion="off"] .glow {
+  opacity: 0.6;
+}
+
+/* ── Scène 2 : contenu éditorial ────────────────────────────────────────────── */
+.content {
+  padding: var(--space-section) var(--space-gutter);
+}
+.kicker {
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.55);
+}
+.band {
+  overflow: hidden;
+  border-top: 1px solid rgba(244, 239, 230, 0.16);
+  border-bottom: 1px solid rgba(244, 239, 230, 0.16);
+  padding: clamp(1.25rem, 3vw, 2rem) 0;
+}

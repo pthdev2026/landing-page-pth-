@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+build
+.env
+.env.local
+.env.*.local
+.DS_Store
+*.log
+.vercel
+# Données locales de développement (demandes, dons) : jamais versionnées
+.data/
+# Médias lourds bruts : ne pas versionner les sources non optimisées
+public/media/**/raw/
+
+# Réglages locaux de l'outil de dev
+.claude/

@@ -1,0 +1,79 @@
+/*
+ * POURQUOI MAINTENANT — quatre cartes-affiches (style carrousel Instagram) puis la conclusion.
+ * Le DOM par défaut = état FINAL. `data-motion="pending"` masque les cartes avant l'animation
+ * (évite le flash à l'hydratation) ; GSAP prend ensuite le relais.
+ */
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  min-height: 15rem;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 1.5rem;
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(244, 239, 230, 0.14);
+  background: #050505;
+  transition:
+    transform 0.5s var(--ease-cine),
+    border-color 0.3s ease;
+}
+.photo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  object-fit: cover;
+}
+/* Voile sombre en bas pour garder le numéro/texte lisibles, la photo reste visible en haut (pas un aplat plein). */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(5, 5, 5, 0.1) 0%, rgba(5, 5, 5, 0.55) 60%, rgba(5, 5, 5, 0.92) 100%);
+}
+@media (min-width: 1024px) {
+  .card {
+    aspect-ratio: 4 / 5;
+  }
+}
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(244, 239, 230, 0.32);
+}
+
+.num {
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  color: rgba(244, 239, 230, 0.5);
+}
+
+.line {
+  font-family: var(--font-sans);
+  font-size: clamp(1.35rem, 0.9rem + 1.05vw, 1.9rem);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.05em;
+}
+
+.section[data-motion="pending"] .card {
+  opacity: 0;
+}

@@ -1,0 +1,124 @@
+/*
+ * FAIRE UN DON (11bis). Bloc volontairement À PART : un panneau encadré (ombre, coins arrondis, fond propre),
+ * pas le fil narratif plein cadre des autres sections — demande utilisateur du 2026-10-14 (« un bloc à séparer
+ * d'un point de vue front-end qui se distingue », référence : un bloc CTA encadré d'un autre site, adapté
+ * à notre palette rouge/noir/argent — jamais le bleu/violet de la référence, interdit par AGENTS.md).
+ * Trois zones dans un seul cadre (même référence, 2026-10-14, 2e envoi — carte photo + panneau latéral + bande
+ * d'action pleine largeur en bas) : à gauche le pourquoi (photo), à droite le comment (champs), en bas l'action
+ * (CTA pleine largeur). Le cadre entier EST le `<form>` : la bande du bas n'est pas un décor, le bouton y envoie
+ * réellement la demande.
+ */
+.module {
+  display: grid;
+  border-radius: calc(var(--radius-card) * 1.4);
+  overflow: hidden;
+  border: 1px solid rgba(244, 239, 230, 0.14);
+  box-shadow: 0 50px 110px rgba(0, 0, 0, 0.55);
+}
+@media (min-width: 1024px) {
+  .module {
+    /* La photo doit dominer, pas le texte (demande du 2026-10-14 : « la carte avec la photo doit être un peu
+       plus grande ») : le panneau photo prend la plus grande part du cadre, les champs le reste ; la bande
+       d'action occupe toute la largeur, sous les deux colonnes. */
+    grid-template-columns: 1.3fr 1fr;
+  }
+}
+
+/* Photo + texte dessus (demande du 2026-10-14, référence envoyée) : la photo en fond plein cadre, un voile
+   rouge/noir par-dessus pour que le texte reste lisible — jamais un aplat neutre, qui romprait l'identité. */
+.pitch {
+  position: relative;
+  min-height: 26rem;
+  padding: 2.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  background-color: var(--color-ink);
+  isolation: isolate;
+}
+@media (min-width: 640px) {
+  .pitch {
+    padding: 3.25rem 3rem;
+  }
+}
+@media (min-width: 1024px) {
+  .pitch {
+    min-height: 34rem;
+    justify-content: flex-end;
+  }
+}
+
+.photo {
+  object-fit: cover;
+  z-index: -2;
+}
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(185deg, rgba(5, 5, 5, 0.3) 0%, rgba(43, 7, 12, 0.55) 45%, rgba(5, 5, 5, 0.94) 100%),
+    linear-gradient(0deg, rgba(5, 5, 5, 0.85) 0%, transparent 55%);
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.point {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  font-size: var(--text-small);
+  line-height: 1.3;
+  color: rgba(244, 239, 230, 0.8);
+}
+.point::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-champagne);
+  transform: translateY(-2px);
+}
+
+/* Panneau des champs : fond CLAIR (référence envoyée le 2026-10-19 — sa structure deux panneaux dont un clair,
+   jamais ses couleurs). Même recette que les blocs ivoire déjà sur le site (Promesse, /projets) : tons neutres
+   sombres sur `--color-paper`, accent bordeaux. Contraste fort avec la photo sombre du panneau de gauche. */
+.fields {
+  padding: 2.5rem 1.75rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+@media (min-width: 640px) {
+  .fields {
+    padding: 3.25rem 3rem;
+  }
+}
+/* Bande d'action pleine largeur (référence du 2026-10-14) : se détache des deux colonnes par un filet, jamais
+   un aplat différent — le cadre reste un seul objet visuel, juste avec un palier d'intention à la fin.
+   Reste claire comme le panneau des champs (2026-10-19) : le bouton d'envoi lui appartient. */
+.bottomBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-top: 1px solid rgba(5, 5, 5, 0.12);
+}
+@media (min-width: 640px) {
+  .bottomBar {
+    padding: 1.5rem 3rem;
+  }
+}
+@media (min-width: 1024px) {
+  .bottomBar {
+    grid-column: 1 / -1;
+  }
+}

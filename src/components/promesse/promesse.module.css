@@ -1,0 +1,64 @@
+/*
+ * PROMESSE — la bande ivoire : le contraste clair du site (alternance noir / ivoire / bordeaux).
+ * Le DOM par défaut = état FINAL. `data-motion="pending"` masque filets et lignes avant l'animation
+ * (évite le flash à l'hydratation) ; GSAP prend ensuite le relais.
+ * Pas de grain ici : la texture film est faite pour le noir, elle salirait l'ivoire.
+ */
+.section {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  --accent: var(--color-crimson); /* le mot d'accent est bordeaux sur fond clair */
+}
+
+.kicker {
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.55);
+}
+
+.rule {
+  height: 1px;
+  background: rgba(5, 5, 5, 0.16);
+  transform-origin: 0 50%;
+}
+
+.row {
+  display: grid;
+  gap: 0.5rem 2rem;
+  align-items: baseline;
+  padding: 1.35rem 0 1.5rem;
+}
+@media (min-width: 1024px) {
+  .row {
+    grid-template-columns: 1.3fr 1fr;
+  }
+}
+
+.word {
+  font-family: var(--font-sans);
+  font-size: var(--text-title);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+}
+/* Seule l'initiale en majuscule (et non chaque mot, comme le ferait `capitalize`). */
+.word::first-letter {
+  text-transform: uppercase;
+}
+.accent {
+  color: var(--color-crimson);
+}
+.note {
+  font-size: var(--text-small);
+  color: rgba(5, 5, 5, 0.6);
+}
+
+.section[data-motion="pending"] .rule {
+  transform: scaleX(0);
+}
+.section[data-motion="pending"] .row {
+  opacity: 0;
+}

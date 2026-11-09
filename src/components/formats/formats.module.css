@@ -1,0 +1,187 @@
+/*
+ * LES FORMATS D'ORIGIN — index éditorial (lignes à filets) + visuel collé qui change au défilement.
+ * L'état actif est posé en JS (attribut data-on) : c'est un changement d'ÉTAT, pas une animation.
+ * Sans JS : tout le texte est plein ; le premier visuel est affiché.
+ */
+.row {
+  border-top: 1px solid rgba(244, 239, 230, 0.16);
+  padding: clamp(2rem, 5.5svh, 4rem) 0;
+  transition: opacity 0.5s var(--ease-cine);
+}
+.row:last-child {
+  border-bottom: 1px solid rgba(244, 239, 230, 0.16);
+}
+/* Quand le défilement est actif, les lignes non actives s'estompent ; sans JS elles restent pleines. */
+.list[data-live] .row:not([data-on]) {
+  opacity: 0.32;
+}
+
+.num {
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  color: rgba(244, 239, 230, 0.5);
+}
+.list[data-live] .row[data-on] .num {
+  color: var(--color-signal);
+}
+
+.name {
+  margin-top: 1rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-headline);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+}
+.text {
+  margin-top: 1rem;
+  max-width: 34ch;
+  font-size: var(--text-lead);
+  line-height: 1.4;
+  color: var(--color-ivory-dim);
+}
+
+/* Cadre collant (desktop) : tous les visuels sont empilés, seul l'actif est visible. */
+.panel {
+  position: sticky;
+  top: 14svh;
+  height: 72svh;
+  max-height: 46rem;
+}
+.frame {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+  margin-left: auto;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(244, 239, 230, 0.14);
+}
+.visual {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-cine);
+}
+.visual[data-on] {
+  opacity: 1;
+}
+
+/* Visuel provisoire : lueur teintée + grand numéro estompé, à remplacer par une vraie image. */
+.placeholder {
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background:
+    radial-gradient(120% 85% at 30% 14%, var(--tint), transparent 62%),
+    linear-gradient(180deg, #140607 0%, #050505 100%);
+}
+.big {
+  position: absolute;
+  right: 1rem;
+  top: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: clamp(6rem, 14vw, 12rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: rgba(244, 239, 230, 0.08);
+}
+.tag {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.6);
+}
+.tag::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-signal);
+}
+
+/* Mobile : même mécanique que le bureau (cadre collant + visuel qui change), le cadre passe en haut, au format paysage. */
+@media (max-width: 1023px) {
+  .panel {
+    position: static; /* c'est l'enveloppe (Formats.jsx) qui est collante sur mobile */
+    height: auto;
+    max-height: none;
+  }
+  .frame {
+    height: auto;
+    width: 100%;
+    /* Plus bas qu'avant (16/10 mangeait ~60 % de l'écran : les textes passaient dessous, retour du 2026-11-02). */
+    aspect-ratio: auto;
+    height: 24svh;
+    min-height: 9rem;
+    margin-left: 0;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  }
+}
+
+/* Chaque visuel « respire » : il arrive légèrement zoomé et se pose quand il devient actif (vie sans coût : transform seul). */
+.visual img {
+  transform: scale(1.08);
+  transition: transform 1.8s var(--ease-cine);
+}
+.visual[data-on] img {
+  transform: scale(1);
+}
+
+/* La « pellicule » (mobile) : une capsule sombre de 7 vignettes sous l'image ; la vignette active se lève et s'allume. */
+.strip {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.6rem 0 0;
+  padding: 0.5rem;
+  list-style: none;
+  border-radius: 1.1rem;
+  border: 1px solid rgba(244, 239, 230, 0.12);
+  background: #050505;
+}
+.strip li {
+  flex: 1;
+  min-width: 0;
+}
+.thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  padding: 0;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(244, 239, 230, 0.14);
+  background: var(--color-ink-soft);
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.45s var(--ease-cine), transform 0.45s var(--ease-cine), border-color 0.45s var(--ease-cine);
+}
+.thumb[data-on] {
+  opacity: 1;
+  border-color: rgba(244, 239, 230, 0.9);
+  transform: translateY(-3px);
+}
+.thumbNum {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  color: var(--color-ivory-dim);
+}

@@ -1,0 +1,10 @@
+/* Avant l'animation : mots estompés (évite le flash de l'état final à l'hydratation). */
+.root[data-motion="pending"] [data-fill-word] {
+  opacity: var(--dim-alpha, 0.35);
+}
+.line {
+  display: block;
+}
+.word {
+  display: inline-block;
+}

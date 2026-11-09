@@ -1,0 +1,373 @@
+/*
+ * PAGE /PROJETS — « Nos projets » (brief du 2026-10-18). Page de conviction/conversion, plus directe que
+ * l'accueil : alternance noir/ivoire franche (le bloc clair que l'utilisateur a identifié comme référence sur ce
+ * site, déjà en place dans Promesse — mêmes tokens, `--color-paper`/`--color-ink`, pas une nouvelle couleur).
+ */
+
+/* ── Bouton Hero à texte défilant (référence grof.io/prospection, 2026-10-21 — mobile seulement, repris ici
+   car propre à /projets). Deux copies du texte dans une piste deux fois plus large que son conteneur
+   (`overflow: hidden` posé sur le lien), animée en boucle ; la seconde copie prend le relais sans coupure
+   visible. `aria-hidden` : le vrai texte accessible est un `sr-only` séparé dans `ProjectsHero.jsx`.
+   Masqué à partir de `lg` ICI (pas via une classe `lg:hidden` sur le même élément dans le JSX) : une classe
+   CSS Module comme `.marqueeTrack` n'est jamais dans `@layer utilities`, donc son `display: flex` l'emporte
+   toujours sur un `lg:hidden` Tailwind posé sur le même élément, quelle que soit la largeur d'écran — piège
+   de cascade déjà documenté ailleurs sur ce projet (voir `ProjectsCatalog.jsx`), reproduit ici le 2026-10-21 :
+   le bouton restait large de ~550 px sur bureau, les deux copies du texte toujours visibles côte à côte. ── */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  flex-shrink: 0;
+  gap: 2.5rem;
+  padding-inline: 1.75rem;
+  animation: marquee 5s linear infinite;
+}
+@media (min-width: 1024px) {
+  .marqueeTrack {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marqueeTrack {
+    animation: none;
+  }
+}
+
+/* ── Blocs clairs (Pourquoi / Catalogue) — même recette que Promesse : fond ivoire, accent bordeaux. ── */
+.light {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+.lightKicker {
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.55);
+}
+.lightDim {
+  color: rgba(5, 5, 5, 0.62);
+}
+.lightRule {
+  border-color: rgba(5, 5, 5, 0.14);
+}
+
+/* ── Réalités (bloc Pourquoi) : frise verticale (référence envoyée le 2026-10-21, un site de construction de
+   studios de jardin — sa structure « ligne + pastilles numérotées + étapes » reprise, jamais ses photos : on
+   n'a pas de vrai visuel par étape, donc texte seul plutôt qu'en inventer un, AGENTS.md). Colonne simple
+   alignée à gauche (pas d'alternance gauche/droite comme la référence : plus simple, cohérent avec le reste
+   du site, fonctionne nativement en mobile). Remplace les cartes en quinconce du 2026-10-19.
+   Anime « ligne par ligne » (2026-10-21, même recette que Promesse) : `.timelineLine` est un vrai élément
+   (pas un `::before`, GSAP a besoin d'un nœud à cibler) qui se tire de haut en bas (`scaleY`), pendant que
+   chaque pastille/texte apparaît au rythme où le trait les atteint — voir `ProjectsWhy.jsx`. ── */
+.timeline {
+  position: relative;
+  max-width: 44rem;
+}
+.timelineLine {
+  position: absolute;
+  left: 1.25rem;
+  top: 1.25rem;
+  bottom: 1.25rem;
+  width: 1px;
+  background: rgba(5, 5, 5, 0.16);
+  transform-origin: 50% 0;
+}
+.light[data-motion="pending"] .timelineLine {
+  transform: scaleY(0);
+}
+.light[data-motion="pending"] .timelineDot {
+  opacity: 0;
+}
+.light[data-motion="pending"] .timelineContent {
+  opacity: 0;
+}
+.timelineStep {
+  position: relative;
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.75rem 0;
+}
+.timelineStep:first-child {
+  padding-top: 0;
+}
+.timelineStep:last-child {
+  padding-bottom: 0;
+}
+.timelineDot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(5, 5, 5, 0.2);
+  background: var(--color-paper);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-crimson);
+}
+.timelineContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.35rem;
+}
+
+/* ── ORIGIN (bloc sombre, direction visuelle réutilisée mais statique — pas de pin/scrub ici). ── */
+.originScreen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid rgba(244, 239, 230, 0.18);
+  border-radius: var(--radius-card);
+  background: radial-gradient(ellipse 80% 90% at 50% 45%, rgba(74, 10, 16, 0.55), rgba(5, 5, 5, 0.9) 70%), var(--color-ink);
+}
+.originWordmark {
+  font-family: var(--font-subtitle);
+  font-weight: 800;
+  font-stretch: 125%;
+  font-variation-settings: "wdth" 125;
+  font-size: clamp(1.75rem, 0.6rem + 5vw, 4.5rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ivory);
+}
+
+/* ── Les 3 dimensions d'ORIGIN : refonte en « slide » (2026-10-21, référence grof.io — structure de cartes qui
+   glissent reprise, jamais ses couleurs). Scroll natif + snap, jamais un pin/scrub : identique au doigt
+   (mobile) et à la molette/au clic (bureau) — voir AGENTS.md, jamais `overflow-x: hidden` sur un ancêtre. ── */
+.hScrollWrap {
+  margin-top: var(--space-block);
+}
+.dimTrack {
+  display: flex;
+  /* Égal au `padding-inline` ci-dessous : la carte précédente ne doit jamais dépasser dans la zone visible
+     une fois la carte courante alignée (`scroll-snap-align: start`) — sinon son bord arrondi déborde et
+     ressemble à une carte vide (retour utilisateur du 2026-10-21). */
+  gap: var(--space-gutter);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  outline: none;
+  /* Déborde volontairement du conteneur centré pour que la dernière carte touche le bord de l'écran,
+     comme le reste du site (grain, bandes pleine largeur) — jamais une colonne qui s'arrête nette. */
+  margin-inline: calc(var(--space-gutter) * -1);
+  padding-inline: var(--space-gutter);
+}
+.dimTrack::-webkit-scrollbar {
+  display: none;
+}
+.dimCard {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  border-radius: calc(var(--radius-card) * 1.3);
+  border: 1px solid rgba(244, 239, 230, 0.14);
+  background: linear-gradient(165deg, rgba(244, 239, 230, 0.06), rgba(244, 239, 230, 0.015));
+  padding: 2rem;
+}
+@media (min-width: 640px) {
+  .dimCard {
+    /* Deux cartes entières, jamais un bout de troisième qui dépasse (ça ressemblait à une carte vide — retour
+       utilisateur du 2026-10-21) : largeur calculée pour que l'espacement (`gap`) tombe juste, sans reste. */
+    flex-basis: calc((100% - var(--space-gutter)) / 2);
+  }
+}
+@media (min-width: 1024px) {
+  .dimCard {
+    /* Les 3 cartes tiennent entières côte à côte : plus de glissement nécessaire à cette largeur. */
+    flex-basis: calc((100% - 2 * var(--space-gutter)) / 3);
+  }
+}
+.dimNumber {
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-champagne);
+}
+.hArrows {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.dimDot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 999px;
+  background: rgba(244, 239, 230, 0.25);
+  transition: background-color 0.2s ease, width 0.2s ease;
+}
+.dimDot[aria-current="true"] {
+  width: 1.5rem;
+  background: var(--color-ivory);
+}
+.hArrowBtn {
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 239, 230, 0.2);
+  color: var(--color-ivory);
+  transition:
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+.hArrowBtn:hover:not(:disabled) {
+  border-color: rgba(244, 239, 230, 0.5);
+}
+.hArrowBtn:disabled {
+  opacity: 0.3;
+}
+
+/* ── Catalogue (bloc clair) : filtres + grille de cartes. ── */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.filterBtn {
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(5, 5, 5, 0.18);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: rgba(5, 5, 5, 0.6);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.filterBtn:hover {
+  border-color: rgba(5, 5, 5, 0.4);
+}
+.filterBtn[aria-pressed="true"] {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-ivory);
+}
+
+/* ── Carte catalogue (refonte 2026-10-21, référence grof.io : photo pleine largeur en haut, coins très
+   arrondis, hiérarchie nette label/titre/texte/action, peu de bordure — structure reprise, jamais leurs
+   couleurs). Remplace la carte « ligne » (photo + texte côte à côte) du 2026-10-18. ── */
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: calc(var(--radius-card) * 1.6);
+  border: 1px solid rgba(5, 5, 5, 0.1);
+  background: var(--color-ivory);
+  box-shadow: 0 1px 2px rgba(5, 5, 5, 0.04);
+  transition:
+    transform 0.4s var(--ease-cine),
+    box-shadow 0.4s var(--ease-cine),
+    border-color 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(5, 5, 5, 0.18);
+  box-shadow: 0 24px 48px rgba(5, 5, 5, 0.12);
+}
+.cardMedia {
+  position: relative;
+  aspect-ratio: 4 / 3;
+}
+.cardStatus {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 1;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(5, 5, 5, 0.78);
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ivory);
+}
+.cardCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  background: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--color-ivory);
+  transition:
+    background-color 0.25s ease,
+    gap 0.25s ease;
+}
+.card:hover .cardCta {
+  background: var(--color-crimson);
+  gap: 0.75rem;
+}
+
+/* ── Nav secondaire (après la Hero) — ne suit plus le scroll (demande du 2026-10-21, retire `position: sticky`). ── */
+.secondaryNav {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.75rem var(--space-gutter);
+  background: rgba(5, 5, 5, 0.85);
+  backdrop-filter: none; /* jamais de glassmorphism (AGENTS.md) */
+  border-bottom: 1px solid rgba(244, 239, 230, 0.12);
+}
+.secondaryNavLink {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: rgba(244, 239, 230, 0.65);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.secondaryNavLink:hover {
+  color: var(--color-ivory);
+}
+.secondaryNavLink[aria-current="true"] {
+  background: rgba(244, 239, 230, 0.12);
+  color: var(--color-ivory);
+}
+
+/* ── Blocs de soutien (ORIGIN / PTH, chacun séparé — 2026-10-19) : titre à gauche, une carte « flottante » à
+   droite qui porte le formulaire de don déjà fléché. Référence Quantic reprise pour la carte uniquement
+   (jamais le ruban métallique ni le bleu/noir) — plus de sélecteur à onglets, un bloc = un projet. ── */
+.supportCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  border-radius: calc(var(--radius-card) * 1.3);
+  border: 1px solid rgba(244, 239, 230, 0.16);
+  background: linear-gradient(165deg, rgba(244, 239, 230, 0.06), rgba(244, 239, 230, 0.015));
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.45);
+  padding: 2rem;
+}
+@media (min-width: 640px) {
+  .supportCard {
+    padding: 2.75rem;
+  }
+}

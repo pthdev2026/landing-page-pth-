@@ -1,0 +1,142 @@
+/*
+ * LA MAISON D'ORIGIN — une maison dessinée en traits fins ; la porte s'allume ; les histoires y entrent.
+ * Scène 1 : conteneur collé (sticky) piloté par le scroll (scrub). Scène 2 : les phrases du brief, en flux normal.
+ * Le DOM par défaut = état FINAL (accessible : reduced-motion, sans JS) : maison tracée, porte allumée, phrase visible, sans points.
+ */
+.section {
+  position: relative;
+  background: var(--color-ink);
+}
+
+.pin {
+  height: calc(var(--pin-height) * 1svh);
+}
+@media (max-width: 767px) {
+  .pin {
+    height: calc(var(--pin-height-mobile) * 1svh);
+  }
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 var(--space-gutter);
+}
+
+/* Lueur chaude derrière la maison : la lumière qui déborde de la porte. */
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(110vw, 80rem);
+  aspect-ratio: 1.6;
+  transform-origin: 50% 50%;
+  margin: calc(min(110vw, 80rem) / -3.2) 0 0 calc(min(110vw, 80rem) / -2);
+  background: radial-gradient(ellipse at center, rgba(196, 84, 40, 0.3), rgba(143, 18, 32, 0.22) 36%, transparent 68%);
+  pointer-events: none;
+}
+
+.stage {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.25rem, 3.5svh, 2.25rem);
+  width: 100%;
+}
+
+/* La maison : tracé fin (l'épaisseur ne change pas avec l'échelle). */
+.house {
+  display: block;
+  /* Largeur bornée par l'écran ET par la hauteur disponible (viewBox 240×190 → ratio 1,263). */
+  width: min(92vw, calc(min(44svh, 28rem) * 1.263));
+  height: auto;
+  overflow: visible;
+}
+.stroke {
+  fill: none;
+  stroke: rgba(244, 239, 230, 0.6);
+  stroke-width: 0.6; /* en unités du viewBox : ~1 px à l'échelle d'affichage */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ground {
+  stroke: url(#groundFade);
+}
+.doorLight {
+  fill: url(#doorGradient);
+}
+.beam {
+  fill: url(#beamGradient);
+}
+
+.statement {
+  max-width: 24ch;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-headline);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+}
+.word {
+  display: inline-block;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--gradient-silver);
+  -webkit-background-clip: text;
+  background-clip: text;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+/* Les histoires : petits points de lumière qui entrent par la porte. */
+.dot {
+  display: none;
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-ivory);
+  pointer-events: none;
+}
+.section[data-motion="pending"] .dot,
+.section[data-motion="on"] .dot {
+  display: block;
+}
+
+/* Avant l'animation : maison invisible, porte éteinte, phrase masquée (évite le flash de l'état final). */
+.section[data-motion="pending"] .stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.section[data-motion="pending"] .doorLight,
+.section[data-motion="pending"] .beam,
+.section[data-motion="pending"] .glow,
+.section[data-motion="pending"] [data-w] {
+  opacity: 0;
+}
+.section[data-motion="off"] .glow {
+  opacity: 0.7;
+}
+
+/* ── Scène 2 : les phrases du brief ─────────────────────────────────────────── */
+.content {
+  padding: var(--space-block) var(--space-gutter) var(--space-section);
+}
+.kicker {
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.55);
+}
+.col {
+  border-top: 1px solid rgba(244, 239, 230, 0.16);
+  padding-top: 1.75rem;
+}

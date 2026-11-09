@@ -1,0 +1,92 @@
+/*
+ * Carte du monde (maplibre-gl) — voir Globe.jsx / GlobeMap.jsx. Fond CARTO « Dark Matter » (libre, sans clé).
+ * Décision utilisateur (2026-09-27, après essai rouge/ambre) : globe gris/argenté, pas rouge — même langage que
+ * les titres argentés du site (dégradé silver). Juste la carte en niveaux de gris, contrastée, sur fond noir.
+ * Scène plein écran (pas une vignette dans une carte) : retour utilisateur « ça fait un peu gadget, une petite
+ * planète dans une case » — le globe doit occuper l'écran comme une vraie planète, fondu dans le noir aux bords
+ * (même langage que les ambiances de section, voir `.atmo-*` dans base.css), sans cadre ni bordure visibles.
+ */
+.wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-ink);
+  height: clamp(26rem, 90svh, 56rem);
+}
+
+.map {
+  /* Pas de `position: absolute` : maplibre-gl.css impose déjà `.maplibregl-map { position: relative }` sur ce même
+     élément (classe ajoutée par la librairie) et écrase le nôtre selon l'ordre de chargement des styles — d'où une
+     hauteur qui retombait à 0. `height: 100%` suffit : le parent `.wrap` a déjà une hauteur définie. */
+  width: 100%;
+  height: 100%;
+  /* Gris/argenté (pas de teinte rouge) : désaturé, contraste renforcé pour que frontières et noms de pays
+     restent nets sur le noir de fond. */
+  filter: grayscale(1) brightness(0.95) contrast(1.25);
+}
+
+/* Étoiles : ambiance « globe dans l'espace » (référence utilisateur), toujours en blanc/gris — pur CSS (aucune image
+   à charger), posé en `mix-blend-mode: screen` sur la carte : n'éclaircit que le noir autour du globe, quasi
+   invisible sur les continents. Motif à 10 points, répété (tuile 320×280) pour ne pas surcharger le DOM.
+   Coupé sous 768 px (règle du projet : jamais de `mix-blend-mode` plein écran sur mobile — ce bloc y est presque
+   aussi haut que l'écran ; le fondu haut/bas + le noir de fond suffisent, sans le coût de calque supplémentaire). */
+.stars {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  background-repeat: repeat;
+  background-size: 320px 280px;
+  background-image:
+    radial-gradient(1.4px 1.4px at 20px 30px, rgba(255, 255, 255, 0.95), transparent 100%),
+    radial-gradient(1px 1px at 90px 80px, rgba(255, 255, 255, 0.7), transparent 100%),
+    radial-gradient(1.6px 1.6px at 160px 40px, rgba(255, 255, 255, 0.9), transparent 100%),
+    radial-gradient(1px 1px at 230px 110px, rgba(255, 255, 255, 0.6), transparent 100%),
+    radial-gradient(1.2px 1.2px at 60px 170px, rgba(255, 255, 255, 0.75), transparent 100%),
+    radial-gradient(1px 1px at 280px 190px, rgba(255, 255, 255, 0.65), transparent 100%),
+    radial-gradient(1.5px 1.5px at 190px 220px, rgba(255, 255, 255, 0.85), transparent 100%),
+    radial-gradient(1px 1px at 20px 250px, rgba(255, 255, 255, 0.6), transparent 100%),
+    radial-gradient(1.3px 1.3px at 300px 30px, rgba(255, 255, 255, 0.8), transparent 100%),
+    radial-gradient(1px 1px at 130px 260px, rgba(255, 255, 255, 0.65), transparent 100%);
+}
+@media (max-width: 767px) {
+  .stars {
+    display: none;
+  }
+}
+
+/* Fondu vers le noir en haut et en bas (même dégradé que `--edge-fade` dans base.css) : le globe se fond dans la
+   section au lieu de s'arrêter net sur une arête — l'impression d'une planète dans l'espace, pas d'un widget encadré. */
+.fadeTop,
+.fadeBottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 9rem;
+  pointer-events: none;
+  z-index: 2;
+}
+.fadeTop {
+  top: 0;
+  background: linear-gradient(to bottom, var(--color-ink) 0%, transparent 100%);
+}
+.fadeBottom {
+  bottom: 0;
+  background: linear-gradient(to top, var(--color-ink) 0%, transparent 100%);
+}
+
+/* Attribution requise (CARTO / OpenStreetMap) : gardée, mais discrète. */
+.map :global(.maplibregl-ctrl-attrib) {
+  background: rgba(5, 5, 5, 0.5);
+  color: rgba(244, 239, 230, 0.5);
+  font-family: var(--font-sans);
+  font-size: 10px;
+}
+.map :global(.maplibregl-ctrl-attrib a) {
+  color: rgba(244, 239, 230, 0.65);
+}
+.map :global(.maplibregl-ctrl-bottom-right) {
+  right: 0.6rem;
+  bottom: 0.6rem;
+}

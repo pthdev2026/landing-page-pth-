@@ -1,0 +1,101 @@
+/*
+ * ÉNONCÉ — texte qui se remplit au scroll
+ * ---------------------------------------
+ * Le conteneur .sticky reste collé à l'écran pendant que la section (plus haute que l'écran) défile :
+ * c'est le scroll "dans" la section qui pilote le remplissage. CSS pur pour le maintien (pas de pin GSAP).
+ */
+.section {
+  position: relative;
+  height: calc(var(--section-height) * 1svh);
+  background: var(--color-ink);
+}
+
+@media (max-width: 767px) {
+  .section {
+    height: calc(var(--section-height-mobile) * 1svh);
+  }
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 var(--space-gutter);
+}
+
+/* Lueur rouge derrière le texte : elle s'allume avec le remplissage (même motif que la Hero : la lumière). */
+.glow {
+  position: absolute;
+  left: 4vw;
+  right: 4vw;
+  top: 12svh;
+  bottom: 12svh;
+  background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(143, 18, 32, 0.42), transparent 70%);
+  pointer-events: none;
+}
+
+.block {
+  position: relative;
+  z-index: var(--z-content);
+  max-width: 62rem;
+}
+
+.text {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 0.7rem + 3.1vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+/* Le mot : par défaut = état FINAL (accessible sans animation). */
+.word {
+  display: inline-block;
+  /* Dégradé argenté peint dans les lettres. Seule l'opacité s'anime (remplissage). */
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--gradient-silver);
+  -webkit-background-clip: text;
+  background-clip: text;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+/* Avant l'animation : mots estompés (évite un flash de l'état final à l'hydratation). */
+.section[data-motion="pending"] .word {
+  opacity: var(--dim-alpha);
+}
+.section[data-motion="pending"] .glow {
+  opacity: 0;
+}
+/* Sans reduced-motion, sans JS : état final complet, lueur discrète. */
+.section[data-motion="off"] .glow {
+  opacity: 0.6;
+}
+
+/* Pastilles-photo dans la phrase (mobile seulement) : elles s'allument avec les mots, comme sur le mobile de Saki. */
+.pill {
+  display: none;
+}
+@media (max-width: 767px) {
+  .pill {
+    display: inline-block;
+    width: 3.3em;
+    height: 1.02em;
+    margin: 0 0.06em;
+    vertical-align: -0.16em;
+    border-radius: 999px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+  }
+  .section[data-motion="pending"] .pill {
+    opacity: var(--dim-alpha);
+  }
+}

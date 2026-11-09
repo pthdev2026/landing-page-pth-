@@ -1,0 +1,118 @@
+/*
+ * NOTRE AMBITION — la question, les histoires qui se rencontrent, la réponse.
+ * Même mécanique que l'Énoncé : la section est plus haute que l'écran, son contenu reste collé (.sticky),
+ * le scroll DANS la section pilote une timeline (scrub).
+ * Le DOM par défaut = état FINAL (accessible : reduced-motion, sans JS) : tout le texte visible, empilé, sans points.
+ */
+.section {
+  position: relative;
+  height: calc(var(--section-height) * 1svh);
+  background: var(--color-ink);
+  --question-final: 0.5; /* la question reste visible mais s'efface derrière la réponse */
+}
+@media (max-width: 767px) {
+  .section {
+    height: calc(var(--section-height-mobile) * 1svh);
+  }
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 var(--space-gutter);
+}
+
+/* Les histoires : petits points de lumière. Positions fixées en % (déterministes), animées en transform. */
+.dot {
+  display: none;
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-ivory);
+  pointer-events: none;
+}
+.section[data-motion="pending"] .dot,
+.section[data-motion="on"] .dot {
+  display: block;
+}
+
+/* Le « lieu » où elles se rencontrent : une lueur bordeaux, douce. */
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(90vw, 70rem);
+  aspect-ratio: 1;
+  margin: calc(min(90vw, 70rem) / -2) 0 0 calc(min(90vw, 70rem) / -2);
+  background: radial-gradient(circle at center, rgba(143, 18, 32, 0.4), rgba(74, 10, 16, 0.18) 38%, transparent 68%);
+  pointer-events: none;
+}
+
+.column {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 54rem;
+  text-align: center;
+}
+
+.question {
+  opacity: var(--question-final);
+}
+
+.lead {
+  margin-top: clamp(3rem, 9vh, 6rem);
+  font-family: var(--font-sans);
+  font-size: var(--text-lead);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-ivory-dim);
+  text-wrap: balance;
+}
+
+.statement {
+  margin-top: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-headline);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+  color: var(--color-ivory);
+  text-wrap: balance;
+}
+/* La réponse : chaque mot en dégradé argenté (voir base.css .text-silver). */
+.statement .word {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--gradient-silver);
+  -webkit-background-clip: text;
+  background-clip: text;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+/* Mot d'accent de la réponse : rouge, sans dégradé (un seul par titre). */
+.statement .em {
+  background: none;
+  color: var(--color-signal);
+  -webkit-text-fill-color: var(--color-signal);
+}
+.word {
+  display: inline-block;
+}
+
+/* Avant l'animation : tout est dans le noir (évite le flash de l'état final à l'hydratation). */
+.section[data-motion="pending"] [data-w] {
+  opacity: 0;
+}
+.section[data-motion="pending"] .glow {
+  opacity: 0;
+}
+.section[data-motion="off"] .glow {
+  opacity: 0.55;
+}

@@ -1,0 +1,146 @@
+/*
+ * NOS CHIFFRES — grille éditoriale à filets (pas de cartes).
+ * Le DOM par défaut = état FINAL. `data-motion="pending"` masque filets et cellules avant l'animation
+ * (évite le flash à l'hydratation) ; GSAP prend ensuite le relais.
+ */
+.section {
+  /* marqueur de portée : les états data-motion ci-dessous s'appliquent à la section */
+  position: relative;
+}
+
+/* Le grand chiffre déborde volontairement de la section : ce conteneur le rogne. `hidden` (et non `clip`, absent des navigateurs
+   plus anciens) est sans risque ici : aucun élément `sticky` n'est à l'intérieur de la section « Chiffres ». */
+.giantClip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Chiffre géant en fond, coupé par le bord droit : très estompé, dégradé gris → transparent (référence « stories »).
+   Gris, pas rouge : la section encadre le globe gris/argenté (2026-09-27), un chiffre rouge y jurerait. */
+.giant {
+  position: absolute;
+  top: 27%;
+  right: -5vw;
+  font-family: var(--font-display);
+  font-size: clamp(15rem, 68vw, 46rem);
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: transparent;
+  background: linear-gradient(180deg, rgba(200, 200, 206, 0.16) 0%, rgba(120, 120, 126, 0.07) 55%, transparent 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  pointer-events: none;
+  user-select: none;
+}
+
+.rule {
+  height: 1px;
+  background: rgba(244, 239, 230, 0.16);
+  transform-origin: 0 50%;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .list {
+    grid-template-columns: repeat(min(var(--cols, 3), 2), 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .list {
+    grid-template-columns: repeat(var(--cols, 3), 1fr);
+  }
+}
+@media (max-width: 639px) {
+  .list > * + * {
+    border-top: 1px solid rgba(244, 239, 230, 0.1);
+  }
+}
+
+.cell {
+  padding: 1.5rem 1rem 2.75rem 0;
+}
+
+/* Mobile : une ligne par chiffre (libellé à gauche, valeur à droite) — plus net qu'une grille à 2 colonnes. */
+@media (max-width: 639px) {
+  .cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 0;
+  }
+  .cell dd {
+    text-align: right;
+  }
+  .figure {
+    font-size: 1.75rem;
+  }
+  .unit {
+    margin-top: 0.35rem;
+  }
+}
+
+.figure {
+  font-family: var(--font-sans);
+  font-size: var(--text-figure);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-ivory);
+}
+/* Chiffre principal (ex. « +3 M ») : plus grand, seul sur sa rangée. */
+.figureWide {
+  font-size: clamp(3rem, 1.4rem + 4.2vw, 6.5rem);
+}
+@media (max-width: 639px) {
+  .figureWide {
+    font-size: 2.25rem;
+  }
+}
+
+/* Valeur pas encore fournie : placeholder volontairement atténué. */
+.placeholder {
+  color: rgba(244, 239, 230, 0.22);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-subtitle);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.6);
+}
+/* Le rouge n'est qu'un point : la retenue fait le premium. */
+.label::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-signal);
+}
+
+.unit {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: var(--text-small);
+  color: var(--color-ivory-dim);
+}
+
+.section[data-motion="pending"] .rule {
+  transform: scaleX(0);
+}
+.section[data-motion="pending"] .cell {
+  opacity: 0;
+}

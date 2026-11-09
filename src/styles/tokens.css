@@ -1,0 +1,63 @@
+/*
+ * DESIGN TOKENS PTH — source unique de vérité visuelle.
+ * Voir docs/05-design-system.md. Ne pas coder de valeur en dur dans les composants.
+ */
+@theme static {
+  /* ── Couleurs ─────────────────────────── */
+  --color-ink: #050505;          /* noir profond — base */
+  --color-ink-soft: #0d0a0a;     /* noir relevé — surfaces */
+  --color-ink-line: #241a1a;     /* filets sur noir */
+  --color-blood: #4a0a10;        /* bordeaux profond */
+  --color-crimson: #8f1220;      /* rouge identitaire */
+  --color-terracotta: #b4452f;   /* rouge chaud */
+  --color-flare: #ff3a24;        /* rouge lumineux — ponctuel */
+  --color-signal: #b3232b;       /* rouge d'action (boutons, mot-clé du manifeste) */
+  --color-scarlet: #d3262f;      /* rouge de texte monumental (assez clair pour rester lisible sur noir) */
+  --color-champagne: #d9b98a;    /* accent premium */
+  --color-ivory: #f2f2f4;        /* texte : blanc neutre (univers rouge / noir / gris) */
+  --color-paper: #f4efe6;        /* fond de la bande claire (Promesse) : crème chaud, réservé à ce contraste */
+  --color-ivory-dim: #a6a6ad;    /* texte secondaire : gris neutre */
+
+  /* ── Dégradés de titre : « argent » sur fond noir, « métal sombre » sur fond ivoire ── */
+  --gradient-silver: linear-gradient(172deg, #fbfbfd 0%, #dcdce1 42%, #a9a9b1 100%);
+  --gradient-metal: linear-gradient(172deg, #0b0b0d 0%, #2e2e33 55%, #6a6a72 100%);
+
+  /* ── Typographie ──────────────────────── */
+  --font-display: var(--font-anton), "Impact", sans-serif; /* DÉCORATIF uniquement (mots d'architecture) — jamais pour un titre */
+  --font-sans: var(--font-inter-tight), system-ui, sans-serif;
+  --font-subtitle: var(--font-archivo), var(--font-inter-tight), sans-serif; /* sous-titres de l'intro */
+
+  /* Échelle fluide (mobile → desktop) */
+  --text-small: 0.875rem; /* libellés, boutons, descriptions (la taille la plus utilisée, comme chez Saki) */
+  --text-micro: clamp(0.6875rem, 0.66rem + 0.1vw, 0.75rem);
+  --text-body: clamp(0.9375rem, 0.9rem + 0.12vw, 1rem);
+  --text-lead: clamp(1.05rem, 0.95rem + 0.4vw, 1.4rem);
+  --text-title: clamp(1.25rem, 0.7rem + 1.45vw, 2.25rem);
+  --text-headline: clamp(1.75rem, 0.6rem + 2.9vw, 3.5rem);
+  --text-monument: clamp(4rem, 15vw, 19rem);
+  --text-figure: clamp(2.25rem, 1.2rem + 2.6vw, 4rem); /* chiffres clés : sobres, pas monumentaux */
+  --text-hero: clamp(1.6rem, 0.5rem + 2.5vw, 3.75rem);
+
+  /* ── Formes : pilules pour les boutons, 20 px pour les cartes et cadres ── */
+  --radius-card: 1.25rem;
+
+  /* ── Espacements de section ───────────── */
+  --space-gutter: clamp(1.5rem, 4vw, 3rem); /* mobile : marges latérales de 24 px (avant 16) — plus épuré */
+  --space-section: clamp(7.5rem, 13vw, 14.5rem);  /* entre deux sections (resserré de ≈ 28 % le 2026-09-25 : le scroll était trop long) */
+  --space-block: clamp(5.5rem, 8.5vw, 8.5rem);    /* entre deux blocs d'une même section (resserré de ≈ 22 %) */
+  --space-sub: clamp(3rem, 4.5vw, 4.5rem);      /* entre un titre et son contenu */
+
+  /* ── Motion ───────────────────────────── */
+  --ease-cine: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-slow: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 200ms;
+  --duration-base: 600ms;
+  --duration-slow: 1200ms;
+  --duration-cine: 1800ms;
+
+  /* ── Z-index ──────────────────────────── */
+  --z-backdrop: 0;
+  --z-content: 10;
+  --z-header: 50;
+  --z-overlay: 60;
+}

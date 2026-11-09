@@ -1,0 +1,226 @@
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-ink);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-ivory);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /*
+   * ⚠ `clip`, JAMAIS `hidden` : sur Safari iPhone, `overflow-x: hidden` sur le body en fait un conteneur de défilement,
+   * ce qui CASSE tous les `position: sticky` de la page (Énoncé, Ambition, Origin, Maison, Formats, fin de film :
+   * les scènes défilaient au lieu de rester en place → « aucune animation » sur mobile). `clip` rogne sans créer de conteneur.
+   */
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-crimson);
+  color: var(--color-ivory);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-champagne);
+  outline-offset: 4px;
+}
+
+/* Grain global — texture film, très subtile, sans coût réseau (SVG inline) */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/*
+ * AMBIANCES DE FOND — l'univers de la landing : dégradé rouge profond → noir, avec une pointe d'orangé (terracotta).
+ * Chaque ambiance s'éteint dans le noir pur sur ses bords : les sections s'enchaînent sans coupure.
+ * Retenue avant tout (« le luxe ne force pas ») : des lueurs sourdes, jamais un aplat rouge.
+ */
+.atmo-warm,
+.atmo-glow-top,
+.atmo-glow-bottom {
+  /* Fondu de bord : chaque ambiance s'éteint dans le noir pur en haut et en bas de sa section (16 rem).
+     Ainsi deux sections voisines se rejoignent toujours sur du noir : aucune arête visible. */
+  --edge-fade: linear-gradient(
+    to bottom,
+    var(--color-ink) 0,
+    rgba(5, 5, 5, 0.6) 5rem,
+    transparent 16rem,
+    transparent calc(100% - 16rem),
+    rgba(5, 5, 5, 0.6) calc(100% - 5rem),
+    var(--color-ink) 100%
+  );
+  background-color: var(--color-ink);
+}
+.atmo-warm {
+  background-image:
+    var(--edge-fade),
+    radial-gradient(70% 55% at 90% 22%, rgba(180, 69, 47, 0.2), transparent 65%),
+    radial-gradient(85% 65% at 6% 84%, rgba(143, 18, 32, 0.3), transparent 72%);
+}
+/* Ambiance neutre (grise) : pour une section qui encadre un visuel gris/argenté (le globe des Chiffres) — le rouge
+   des autres ambiances jurerait juste au-dessus/en dessous d'un visuel volontairement sans couleur. */
+.atmo-cool {
+  --edge-fade: linear-gradient(
+    to bottom,
+    var(--color-ink) 0,
+    rgba(5, 5, 5, 0.6) 5rem,
+    transparent 16rem,
+    transparent calc(100% - 16rem),
+    rgba(5, 5, 5, 0.6) calc(100% - 5rem),
+    var(--color-ink) 100%
+  );
+  background-color: var(--color-ink);
+  background-image:
+    var(--edge-fade),
+    radial-gradient(70% 55% at 90% 18%, rgba(180, 180, 186, 0.1), transparent 65%),
+    radial-gradient(85% 65% at 8% 86%, rgba(120, 120, 126, 0.14), transparent 72%);
+}
+.atmo-glow-bottom {
+  background-image: var(--edge-fade), radial-gradient(95% 55% at 50% 90%, rgba(143, 18, 32, 0.4), rgba(74, 10, 16, 0.16) 48%, transparent 78%);
+}
+.atmo-glow-top {
+  background-image: var(--edge-fade), radial-gradient(95% 55% at 50% 12%, rgba(143, 18, 32, 0.38), rgba(74, 10, 16, 0.14) 48%, transparent 78%);
+}
+/* Bande rouge : le moment le plus chaud de la page. Noir → bordeaux → noir, avec un reflet orangé. */
+.atmo-red-band {
+  background-color: var(--color-ink);
+  background-image:
+    radial-gradient(60% 45% at 82% 30%, rgba(196, 84, 40, 0.22), transparent 70%),
+    linear-gradient(180deg, #050505 0%, #2b070c 24%, #4d0b12 50%, #2b070c 76%, #050505 100%);
+}
+
+/*
+ * Titres à dégradé (argent / métal sombre). Le dégradé est peint DANS les lettres (background-clip: text).
+ * À poser sur l'élément qui contient directement le texte (chaque mot s'il est animé : une ancêtre avec
+ * un descendant animé (opacity/transform) ne le peindrait pas de façon fiable).
+ * Le padding-bottom/margin-bottom négatif étend le fond sous la ligne pour ne pas couper les jambages (g, p, y).
+ */
+.text-silver,
+.text-metal {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.text-silver {
+  background-image: var(--gradient-silver);
+}
+.text-metal {
+  background-image: var(--gradient-metal);
+}
+
+/*
+ * MOT D'ACCENT : un seul mot par titre en rouge (règle reprise de Saki). Reprend une couleur pleine :
+ * le dégradé du titre ne s'y applique pas. `--accent` change de valeur selon le fond (bordeaux sur la bande claire).
+ */
+.text-accent {
+  background: none !important;
+  color: var(--accent, var(--color-signal)) !important;
+  -webkit-text-fill-color: var(--accent, var(--color-signal)) !important;
+}
+
+/* Mot monumental : décor architectural, jamais lu par les lecteurs d'écran */
+.monument {
+  font-family: var(--font-display);
+  font-size: var(--text-monument);
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Défilement horizontal des disciplines (Mission, scène 4) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .marquee-track { animation: none; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Grain « pellicule » vivant : le grain se décale par saccades (8 images/s) comme sur une pellicule qui défile.
+ * Coût : un seul calque déplacé en transform (GPU). Réservé à la Hero et à la fin de film ; coupé en « réduire les animations ».
+ */
+/* `clip` (pas `hidden`) : rogne le calque agrandi sans créer de conteneur de défilement — les enfants `position: sticky` continuent de fonctionner. */
+.grain-live { overflow: clip; }
+.grain-live::after {
+  inset: -12%;
+  animation: grain-shift 0.9s steps(1) infinite;
+}
+@keyframes grain-shift {
+  0%   { transform: translate3d(0, 0, 0); }
+  14%  { transform: translate3d(-4%, 3%, 0); }
+  28%  { transform: translate3d(3%, -4%, 0); }
+  42%  { transform: translate3d(-2%, -3%, 0); }
+  57%  { transform: translate3d(4%, 2%, 0); }
+  71%  { transform: translate3d(-3%, 4%, 0); }
+  85%  { transform: translate3d(2%, -2%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grain-live::after { animation: none; }
+}
+
+/* Mobile : le grain en mélange « overlay » sur tout l'écran et son animation coûtent cher à chaque image défilée.
+   On garde un grain statique, très léger, sans mélange. */
+@media (max-width: 767px) {
+  .grain::after {
+    mix-blend-mode: normal;
+    opacity: 0.05;
+  }
+  .grain-live::after {
+    animation: none;
+    inset: 0;
+  }
+}
+
+/* Formulaire : les champs entrent l'un après l'autre à l'ouverture d'un mode (montée + fondu, transform/opacité seulement). */
+.form-rise > * {
+  animation: form-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.form-rise > *:nth-child(2) { animation-delay: 0.05s; }
+.form-rise > *:nth-child(3) { animation-delay: 0.1s; }
+.form-rise > *:nth-child(4) { animation-delay: 0.16s; }
+.form-rise > *:nth-child(5) { animation-delay: 0.22s; }
+.form-rise > *:nth-child(6) { animation-delay: 0.28s; }
+.form-rise > *:nth-child(7) { animation-delay: 0.34s; }
+.form-rise > *:nth-child(8) { animation-delay: 0.4s; }
+.form-rise > *:nth-child(n + 9) { animation-delay: 0.46s; }
+@keyframes form-rise {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .form-rise > * { animation: none; }
+}
